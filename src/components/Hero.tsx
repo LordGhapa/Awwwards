@@ -113,11 +113,10 @@ export default function Hero() {
             setActiveVideoElement(nextVideoElement)
           }
         })
-
       }
     })
   }
-console.count('render')
+  console.count('render')
   useEffect(() => {
     if (loadedVideos === totalVideos - 1) {
       setIsLoading(false)
@@ -162,24 +161,26 @@ console.count('render')
         className="relative z-10 h-dvh w-screen overflow-hidden rounded-lg bg-blue-75 "
       >
         <div>
-          <div className="mask-clip-path absolute-center absolute z-50 size-64 cursor-pointer overflow-hidden rounded-lg  ">
-            <div
-              onClick={handleMiniVdClick}
-              className="origin-center scale-50 opacity-0 transition-all duration-500 ease-in hover:scale-100 hover:opacity-100"
-            >
-              <video
-                src={getVideoSrc(
-                  currentVideoIndex === 4 ? 1 : currentVideoIndex + 1
-                )}
-                muted
-                loop
-                playsInline
-                id="current-video"
-                className="absolute-center z-50 size-64 origin-center scale-150 object-cover object-center"
-                onLoadedData={handleVideoLoad}
-              />
+          {!isTransitioning && (
+            <div className="mask-clip-path absolute-center absolute z-50 size-64 cursor-pointer overflow-hidden rounded-lg  ">
+              <div
+                onClick={handleMiniVdClick}
+                className="origin-center scale-50 opacity-0 transition-all duration-500 ease-in hover:scale-100 hover:opacity-100"
+              >
+                <video
+                  src={getVideoSrc(
+                    currentVideoIndex === 4 ? 1 : currentVideoIndex + 1
+                  )}
+                  muted
+                  loop
+                  playsInline
+                  id="current-video"
+                  className=" z-50 size-64 origin-center scale-150 object-cover object-center"
+                  onLoadedData={handleVideoLoad}
+                />
+              </div>
             </div>
-          </div>
+          )}
           <video
             ref={videoRef1}
             src={getVideoSrc(1)}
