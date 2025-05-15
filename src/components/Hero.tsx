@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import Button from './button'
+import Button from './Button'
 import { TiLocationArrow } from 'react-icons/ti'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
@@ -9,20 +9,115 @@ gsap.registerPlugin(ScrollTrigger)
 import { ScrollTrigger } from 'gsap/all'
 
 export default function Hero() {
-  const [currentIndex, setCurrentIndex] = useState(1)
-  const [hasClicked, setHasClicked] = useState(false)
+  // Estado para rastrear qual vídeo estamos exibindo (1-4)
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(1)
+  // Estado para controlar qual vídeo físico (1 ou 2) está ativo
+  const [activeVideoElement, setActiveVideoElement] = useState(1)
+  // Estado para evitar cliques durante transições
+  const [isTransitioning, setIsTransitioning] = useState(false)
+
   const [isLoading, setIsLoading] = useState(true)
   const [loadedVideos, setLoadedVideos] = useState(0)
   const totalVideos = 4
-  const nextVideoRef = useRef<HTMLVideoElement>(null)
 
-  const upcomingVideoIndex = (currentIndex % totalVideos) + 1
+  // Referências para os dois elementos de vídeo físicos
+  const videoRef1 = useRef<HTMLVideoElement>(null)
+  const videoRef2 = useRef<HTMLVideoElement>(null)
+  const getVideoSrc = (index: number) => `videos/hero-${index}.mp4`
+
   const handleMiniVdClick = () => {
-    setHasClicked(true)
-    // setCurrentIndex(upcomingVideoIndex)
-    setCurrentIndex(prevIndex => (prevIndex % totalVideos) + 1)
-  }
+    if (isTransitioning) return
+    setIsTransitioning(true)
+    // Determinar qual vídeo será o próximo na sequência
+    const nextVideoIndex = currentVideoIndex === 4 ? 1 : currentVideoIndex + 1
+    // Determinar qual elemento de vídeo está inativo para torná-lo ativo
+    const nextVideoElement = activeVideoElement === 1 ? 2 : 1
 
+    // Referências para o vídeo atual e o próximo
+    const currentVideoRef = activeVideoElement === 1 ? videoRef1 : videoRef2
+    const nextVideoRef = activeVideoElement === 1 ? videoRef2 : videoRef1
+
+    // Garantir que o próximo vídeo tenha a URL correta antes da animação
+    if (
+      nextVideoRef.current &&
+      nextVideoRef.current.src.replace(`${window.location.origin}/`, '') !==
+        getVideoSrc(nextVideoIndex)
+    ) {
+      nextVideoRef.current.src = getVideoSrc(nextVideoIndex)
+      // Carregar o vídeo
+      nextVideoRef.current.load()
+      // Pre-load de imagens de miniatura
+      // const preloadImg = new Image()
+      // preloadImg.src = `thumbnails/hero-${nextVideoIndex}.jpg`
+    }
+    //setando css inicial para visivel
+    gsap.set(nextVideoRef.current, {
+      visibility: 'visible',
+      opacity: 100,
+      width: '16rem',
+      height: '16rem',
+      position: 'absolute',
+      left: '50%',
+      top: '50%',
+      xPercent: -50,
+      yPercent: -50,
+      zIndex: 20,
+      borderRadius: '16px'
+    })
+    //animação fazendo video crescer
+    gsap.to(nextVideoRef.current, {
+      width: '100%',
+      height: '100%',
+      duration: 1.5,
+      transformOrigin: 'center center',
+      borderRadius: 0,
+      ease: 'power1.inOut',
+      onStart: () => {
+        // Iniciar o próximo vídeo
+        if (nextVideoRef.current) {
+          nextVideoRef.current.play()
+        }
+      },
+      onComplete: () => {
+        //animação fazendo video anterior diminuir e sumir
+        gsap.to(currentVideoRef.current, {
+          width: '16rem',
+          height: '16rem',
+          borderRadius: '16px',
+          zIndex: 10,
+          duration: 0.1,
+          onStart: () => {
+            // Pausar o vídeo atual
+            if (currentVideoRef.current) {
+              currentVideoRef.current.pause()
+            }
+          },
+          onComplete: () => {
+            // Calcular o próximo vídeo a ser carregado (dois à frente)
+            const nextPreloadIndex =
+              nextVideoIndex === 4
+                ? 1
+                : nextVideoIndex === 3
+                ? 4
+                : nextVideoIndex + 1
+
+            // Atualizar o src do vídeo atual que diminuiu para o próximo da sequência e garante que ele não seja exibido
+            if (currentVideoRef.current) {
+              currentVideoRef.current.src = getVideoSrc(nextPreloadIndex)
+              currentVideoRef.current.load()
+              gsap.set(currentVideoRef.current, { visibility: 'hidden' })
+            }
+            // indica fim da animação e atualiza os estados
+            setIsTransitioning(false)
+            setCurrentVideoIndex(nextVideoIndex)
+            setActiveVideoElement(nextVideoElement)
+          }
+        })
+
+      }
+    })
+  }
+console.count('render')
   useEffect(() => {
     if (loadedVideos === totalVideos - 1) {
       setIsLoading(false)
@@ -32,35 +127,6 @@ export default function Hero() {
   const handleVideoLoad = () => {
     setLoadedVideos(prevCount => prevCount + 1)
   }
-  const getVideoSrc = (index: number) => `videos/hero-${index}.mp4`
-  useGSAP(
-    () => {
-      if (hasClicked) {
-        gsap.set('#next-video', { visibility: 'visible' })
-        gsap.to('#next-video', {
-          transformOrigin: 'center center',
-          scale: 1,
-          width: '100%',
-          height: '100%',
-          duration: 1,
-          ease: 'power1.inOut',
-          onStart: () => {
-            nextVideoRef?.current?.play()
-          }
-        })
-
-        gsap.from('#current-video', {
-          transformOrigin: 'center center',
-          scale: 0,
-          duration: 1.5,
-          ease: 'power1.inOut',
-          
-
-        })
-      }
-    },
-    { dependencies: [currentIndex], revertOnUpdate: true }
-  )
 
   useGSAP(() => {
     gsap.set('#video-frame', {
@@ -102,38 +168,43 @@ export default function Hero() {
               className="origin-center scale-50 opacity-0 transition-all duration-500 ease-in hover:scale-100 hover:opacity-100"
             >
               <video
-                ref={nextVideoRef}
-                src={getVideoSrc(upcomingVideoIndex)}
+                src={getVideoSrc(
+                  currentVideoIndex === 4 ? 1 : currentVideoIndex + 1
+                )}
                 muted
                 loop
                 playsInline
                 id="current-video"
-                className="size-64 origin-center scale-150 object-cover object-center"
+                className="absolute-center z-50 size-64 origin-center scale-150 object-cover object-center"
                 onLoadedData={handleVideoLoad}
               />
             </div>
           </div>
           <video
-            ref={nextVideoRef}
-            src={getVideoSrc(currentIndex)}
+            ref={videoRef1}
+            src={getVideoSrc(1)}
             loop
             muted
-            id="next-video"
-            autoPlay // Add this line
-            playsInline // Add this line
-            className="absolute-center invisible absolute z-20 size-64 object-cover object-center"
+            autoPlay
+            playsInline
+            className="absolute-center absolute z-20 size-full  object-cover object-center"
             onLoadedData={handleVideoLoad}
+            style={{           
+              zIndex: activeVideoElement === 1 ? 10 : 5
+            }}
           />
           <video
-            src={getVideoSrc(
-              currentIndex === totalVideos - 1 ? 1 : currentIndex
-            )}
-            autoPlay
+            ref={videoRef2}
+            src={getVideoSrc(2)}
+            autoPlay={false}
             muted
             loop
             playsInline
-            className="absolute left-0 top-0 size-full object-cover object-center"
+            className="absolute-center absolute  size-64 object-cover object-center"
             onLoadedData={handleVideoLoad}
+            style={{           
+              zIndex: activeVideoElement === 2 ? 10 : 5
+            }}
           />
         </div>
         <h1 className="special-font hero-heading absolute bottom-5 right-5 z-40 text-blue-75 ">
@@ -153,7 +224,20 @@ export default function Hero() {
               title="Watch Trailer"
               leftIcon={<TiLocationArrow />}
               containerClass="bg-yellow-300 flex-center gap-1"
+              onClick={handleMiniVdClick}
             />
+            {/* Indicador do vídeo atual (para debug) */}
+
+            {process.env.NODE_ENV === 'development' && (
+              <div className="mt-4 bg-black bg-opacity-50 p-2 text-white rounded inline-block">
+                <p>Video Atual: {currentVideoIndex}</p>
+                <p>
+                  Próximo Video:{' '}
+                  {currentVideoIndex === 4 ? 1 : currentVideoIndex + 1}
+                </p>{' '}
+                <p>Player Ativo: {activeVideoElement}</p>
+              </div>
+            )}
           </div>
         </div>
       </div>

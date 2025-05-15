@@ -1,4 +1,5 @@
 import Hero from './components/hero'
+import TestHero from './components/TestHero'
 
 export default function App() {
   return (
