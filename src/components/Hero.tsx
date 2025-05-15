@@ -147,7 +147,7 @@ console.count('render')
   })
   return (
     <div className="relative h-dvh w-screen overflow-x-hidden text-blue-200">
-      {/* {isLoading && (
+      {isLoading && (
         <div className="flex-center absolute z-[100] h-dvh w-screen overflow-hidden bg-violet-50">
           <div className="three-body">
             <div className="three-body__dot"></div>
@@ -155,7 +155,7 @@ console.count('render')
             <div className="three-body__dot"></div>
           </div>
         </div>
-      )} */}
+      )}
 
       <div
         id="video-frame"
@@ -189,7 +189,7 @@ console.count('render')
             playsInline
             className="absolute-center absolute z-20 size-full  object-cover object-center"
             onLoadedData={handleVideoLoad}
-            style={{           
+            style={{
               zIndex: activeVideoElement === 1 ? 10 : 5
             }}
           />
@@ -202,7 +202,7 @@ console.count('render')
             playsInline
             className="absolute-center absolute  size-64 object-cover object-center"
             onLoadedData={handleVideoLoad}
-            style={{           
+            style={{
               zIndex: activeVideoElement === 2 ? 10 : 5
             }}
           />
@@ -228,7 +228,7 @@ console.count('render')
             />
             {/* Indicador do vídeo atual (para debug) */}
 
-            {process.env.NODE_ENV === 'development' && (
+            {import.meta.env.MODE === 'development' && (
               <div className="mt-4 bg-black bg-opacity-50 p-2 text-white rounded inline-block">
                 <p>Video Atual: {currentVideoIndex}</p>
                 <p>

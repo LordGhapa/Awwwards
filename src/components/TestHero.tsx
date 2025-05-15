@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
+
 import { useEffect, useRef, useState } from 'react'
 import Button from './Button'
 import { TiLocationArrow } from 'react-icons/ti'
@@ -20,7 +23,7 @@ export default function TestHero() {
 
   const [isLoading, setIsLoading] = useState(true)
   const [loadedVideos, setLoadedVideos] = useState(0)
-  const totalVideos = 4
+
 
   // Referências para os dois elementos de vídeo físicos
   const videoRef1 = useRef<HTMLVideoElement>(null)
@@ -31,7 +34,7 @@ export default function TestHero() {
 
   // Debug: Adiciona mensagens para acompanhar a transição
   const logTransition = (message: string) => {
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.MODE === 'development') {
       console.log(`🎬 ${message}`)
     }
   }
@@ -312,7 +315,7 @@ export default function TestHero() {
             />
 
             {/* Indicador do vídeo atual (para debug) */}
-            {process.env.NODE_ENV === 'development' && (
+            {import.meta.env.MODE === 'development' && (
               <div className="mt-4 bg-black bg-opacity-50 p-2 text-white rounded inline-block">
                 <p>Video Atual: {currentVideoIndex}</p>
                 <p>Elemento Ativo: {activeVideoElement}</p>
