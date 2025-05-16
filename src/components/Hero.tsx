@@ -68,7 +68,7 @@ export default function Hero() {
     gsap.to(nextVideoRef.current, {
       width: '100%',
       height: '100%',
-      duration: 1.5,
+      duration: 1,
       transformOrigin: 'center center',
       borderRadius: 0,
       ease: 'power1.inOut',
@@ -116,7 +116,7 @@ export default function Hero() {
       }
     })
   }
-  console.count('render')
+
   useEffect(() => {
     if (loadedVideos === totalVideos - 1) {
       setIsLoading(false)
@@ -145,7 +145,7 @@ export default function Hero() {
     })
   })
   return (
-    <div className="relative h-dvh w-screen overflow-x-hidden text-blue-200">
+    <div className="relative h-dvh w-screen  overflow-x-hidden text-blue-200">
       {isLoading && (
         <div className="flex-center absolute z-[100] h-dvh w-screen overflow-hidden bg-violet-50">
           <div className="three-body">
@@ -158,7 +158,7 @@ export default function Hero() {
 
       <div
         id="video-frame"
-        className="relative z-10 h-dvh w-screen overflow-hidden rounded-lg bg-blue-75 "
+        className="relative z-10 h-dvh w-screen overflow-hidden rounded-lg bg-green-500 "
       >
         <div>
           {!isTransitioning && (
@@ -186,9 +186,9 @@ export default function Hero() {
             src={getVideoSrc(1)}
             loop
             muted
-            autoPlay
+            // autoPlay
             playsInline
-            className="absolute-center absolute z-20 size-full  object-cover object-center"
+            className="absolute-center absolute z-20 size-full -mt-[1px] object-cover object-center"
             onLoadedData={handleVideoLoad}
             style={{
               zIndex: activeVideoElement === 1 ? 10 : 5
@@ -201,7 +201,7 @@ export default function Hero() {
             muted
             loop
             playsInline
-            className="absolute-center absolute  size-64 object-cover object-center"
+            className="absolute-center absolute  size-64 object-cover -mt-[1px] object-center"
             onLoadedData={handleVideoLoad}
             style={{
               zIndex: activeVideoElement === 2 ? 10 : 5
@@ -221,8 +221,8 @@ export default function Hero() {
               Unleash the Play Economy
             </p>
             <Button
-              id="watch-trailer"
-              title="Watch Trailer"
+              id="next-trailer"
+              title="Next Trailer"
               leftIcon={<TiLocationArrow />}
               containerClass="bg-yellow-300 flex-center gap-1"
               onClick={handleMiniVdClick}

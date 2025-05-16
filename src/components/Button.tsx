@@ -4,7 +4,7 @@ type ButtonProps = {
   id?: string
   title: string
   leftIcon?: React.ReactElement<IconType>
-rightIcon?: React.ReactElement<IconType>
+  rightIcon?: React.ReactElement<IconType>
   containerClass?: string
   onClick?: () => void
 }
