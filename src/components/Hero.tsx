@@ -186,7 +186,7 @@ export default function Hero() {
             src={getVideoSrc(1)}
             loop
             muted
-            // autoPlay
+            autoPlay
             playsInline
             className="absolute-center absolute z-20 size-full -mt-[1px] object-cover object-center"
             onLoadedData={handleVideoLoad}

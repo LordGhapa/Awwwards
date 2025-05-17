@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 
 body {
-  @apply  font-general overflow-x-hidden;
+  @apply font-general overflow-x-hidden;
   width: 100dvw;
   background-color: #dfdff0;
 }
@@ -98,11 +98,11 @@ body {
   will-change: opacity, transform;
 }
 
-@utility bento-tilt_1 {
+@utility bento-tilt-1 {
   @apply relative border-hsla col-span-2 overflow-hidden rounded-md transition-transform duration-300 ease-out;
 }
 
-@utility bento-tilt_2 {
+@utility bento-tilt-2 {
   @apply relative  col-span-1 row-span-1 overflow-hidden rounded-md transition-transform duration-300 ease-out;
 }
 
