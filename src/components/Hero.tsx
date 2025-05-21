@@ -20,6 +20,8 @@ export default function Hero() {
   const [loadedVideos, setLoadedVideos] = useState(0)
   const totalVideos = 4
 
+  const loadingRef = useRef<HTMLDivElement>(null)
+
   // Referências para os dois elementos de vídeo físicos
   const videoRef1 = useRef<HTMLVideoElement>(null)
   const videoRef2 = useRef<HTMLVideoElement>(null)
@@ -144,25 +146,48 @@ export default function Hero() {
       }
     })
   })
+  useGSAP(() => {
+    gsap.set(loadingRef.current, {
+      borderRadius: '50%',
+      width: loadingRef.current ? loadingRef.current.offsetHeight : '100%',
+      delay: 1
+    })
+
+    gsap.to(loadingRef.current, {
+      scale: 0,
+      duration: 0.5,
+      delay: 1,
+      onComplete: () => {
+        gsap.set(loadingRef.current, {
+          zIndex: -1
+        })
+      }
+    })
+
+  }, [isLoading])
   return (
     <div className="relative h-dvh w-screen  overflow-x-hidden text-blue-200">
-      {isLoading && (
-        <div className="flex-center absolute z-[100] h-dvh w-screen overflow-hidden bg-violet-50">
+      <div className="h-dvh w-screen flex-center absolute">
+        <div
+          ref={loadingRef}
+          className="flex-center absolute z-[100] h-dvh w-screen overflow-hidden bg-violet-50"
+        >
           <div className="three-body">
             <div className="three-body__dot"></div>
             <div className="three-body__dot"></div>
             <div className="three-body__dot"></div>
           </div>
         </div>
-      )}
+      </div>
 
       <div
         id="video-frame"
-        className="relative z-10 h-dvh w-screen overflow-hidden rounded-lg bg-green-500 "
+        className="relative z-10 h-dvh w-screen overflow-hidden rounded-lg  "
       >
         <div>
           {!isTransitioning && (
             <div className="mask-clip-path absolute-center absolute z-50 size-64 cursor-pointer overflow-hidden rounded-lg  ">
+              {/* <VideoPreview> */}
               <div
                 onClick={handleMiniVdClick}
                 className="origin-center scale-50 opacity-0 transition-all duration-500 ease-in hover:scale-100 hover:opacity-100"
@@ -179,6 +204,7 @@ export default function Hero() {
                   onLoadedData={handleVideoLoad}
                 />
               </div>
+              {/* </VideoPreview> */}
             </div>
           )}
           <video
