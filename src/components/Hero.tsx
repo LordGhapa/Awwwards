@@ -8,7 +8,11 @@ gsap.registerPlugin(ScrollTrigger)
 
 import { ScrollTrigger } from 'gsap/all'
 
-export default function Hero() {
+type HeroProps = {
+  playMusic?: React.RefObject<(() => void) | null>
+}
+
+export default function Hero({ playMusic }: HeroProps) {
   // Estado para rastrear qual vídeo estamos exibindo (1-4)
   const [currentVideoIndex, setCurrentVideoIndex] = useState(1)
   // Estado para controlar qual vídeo físico (1 ou 2) está ativo
@@ -28,6 +32,9 @@ export default function Hero() {
   const getVideoSrc = (index: number) => `videos/hero-${index}.mp4`
 
   const handleMiniVdClick = () => {
+    if (playMusic?.current) {
+      playMusic.current()
+    }
     if (isTransitioning) return
     setIsTransitioning(true)
     // Determinar qual vídeo será o próximo na sequência
@@ -163,7 +170,6 @@ export default function Hero() {
         })
       }
     })
-
   }, [isLoading])
   return (
     <div className="relative h-dvh w-screen  overflow-x-hidden text-blue-200">

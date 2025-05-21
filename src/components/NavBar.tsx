@@ -7,7 +7,11 @@ import gsap from 'gsap'
 
 const navItems = ['Nexus', 'Vault', 'Prologue', 'About', 'Contact']
 
-export default function NavBar() {
+interface NavBarProps {
+  playMusicRef: React.RefObject<(() => void) | null>
+}
+
+export default function NavBar({ playMusicRef }: NavBarProps) {
   // State for toggling audio and visual indicator
   const [isAudioPlaying, setIsAudioPlaying] = useState(false)
   const [isIndicatorActive, setIsIndicatorActive] = useState(false)
@@ -19,6 +23,18 @@ export default function NavBar() {
   const { y: currentScrollY } = useWindowScroll()
   const [isNavVisible, setIsNavVisible] = useState(true)
   const [lastScrollY, setLastScrollY] = useState(0)
+
+  function playMusic() {
+    setIsAudioPlaying(true)
+    setIsIndicatorActive(true)
+  }
+
+  useEffect(() => {
+    if (playMusicRef.current == null) {
+      playMusicRef.current = playMusic
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // Toggle audio and visual indicator
   const toggleAudioIndicator = () => {
@@ -72,6 +88,7 @@ export default function NavBar() {
               title="Products"
               rightIcon={<TiLocationArrow />}
               containerClass="bg-blue-50 md:flex hidden items-center justify-center gap-1"
+              onClick={playMusic}
             />
           </div>
           <div className="flex h-full items-center ">
