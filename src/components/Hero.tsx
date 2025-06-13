@@ -7,6 +7,8 @@ import gsap from 'gsap'
 gsap.registerPlugin(ScrollTrigger)
 
 import { ScrollTrigger } from 'gsap/all'
+import clsx from 'clsx'
+import HeroMouseMoviment from './HeroMouseMoviment'
 
 type HeroProps = {
   playMusic?: React.RefObject<(() => void) | null>
@@ -25,6 +27,8 @@ export default function Hero({ playMusic }: HeroProps) {
   const totalVideos = 4
 
   const loadingRef = useRef<HTMLDivElement>(null)
+
+  const [setshowMiniVd, setSetshowMiniVd] = useState(false)
 
   // Referências para os dois elementos de vídeo físicos
   const videoRef1 = useRef<HTMLVideoElement>(null)
@@ -173,110 +177,117 @@ export default function Hero({ playMusic }: HeroProps) {
   }, [isLoading])
   return (
     <div className="relative h-dvh w-screen  overflow-x-hidden text-blue-200">
-      <div className="h-dvh w-screen flex-center absolute">
-        <div
-          ref={loadingRef}
-          className="flex-center absolute z-[100] h-dvh w-screen overflow-hidden bg-violet-50"
-        >
-          <div className="three-body">
-            <div className="three-body__dot"></div>
-            <div className="three-body__dot"></div>
-            <div className="three-body__dot"></div>
+      <HeroMouseMoviment setSetshowMiniVd={setSetshowMiniVd}>
+        <div className="h-dvh w-screen flex-center absolute">
+          <div
+            ref={loadingRef}
+            className="flex-center absolute z-[100] h-dvh w-screen overflow-hidden bg-violet-50"
+          >
+            <div className="three-body">
+              <div className="three-body__dot"></div>
+              <div className="three-body__dot"></div>
+              <div className="three-body__dot"></div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div
-        id="video-frame"
-        className="relative z-10 h-dvh w-screen overflow-hidden rounded-lg  "
-      >
-        <div>
-          {!isTransitioning && (
-            <div className="mask-clip-path absolute-center absolute z-50 size-64 cursor-pointer overflow-hidden rounded-lg  ">
-              {/* <VideoPreview> */}
-              <div
-                onClick={handleMiniVdClick}
-                className="origin-center scale-50 opacity-0 transition-all duration-500 ease-in hover:scale-100 hover:opacity-100"
-              >
-                <video
-                  src={getVideoSrc(
-                    currentVideoIndex === 4 ? 1 : currentVideoIndex + 1
+        <div
+          id="video-frame"
+          className="relative z-10 h-dvh w-screen overflow-hidden rounded-lg  "
+        >
+          <div>
+            {!isTransitioning && (
+              <div className="mask-clip-path absolute-center absolute z-50 size-64 cursor-pointer overflow-hidden rounded-lg  ">
+                {/* <VideoPreview> */}
+                <div
+                  onClick={handleMiniVdClick}
+                  className={clsx(
+                    'origin-center scale-50 opacity-0 transition-all duration-500 ease-in hover:scale-100 hover:opacity-100',
+                    {
+                      'opacity-100 scale-100': setshowMiniVd
+                    }
                   )}
-                  muted
-                  loop
-                  playsInline
-                  id="current-video"
-                  className=" z-50 size-64 origin-center scale-150 object-cover object-center"
-                  onLoadedData={handleVideoLoad}
-                />
-              </div>
-              {/* </VideoPreview> */}
-            </div>
-          )}
-          <video
-            ref={videoRef1}
-            src={getVideoSrc(1)}
-            loop
-            muted
-            autoPlay
-            playsInline
-            className="absolute-center absolute z-20 size-full -mt-[1px] object-cover object-center"
-            onLoadedData={handleVideoLoad}
-            style={{
-              zIndex: activeVideoElement === 1 ? 10 : 5
-            }}
-          />
-          <video
-            ref={videoRef2}
-            src={getVideoSrc(2)}
-            autoPlay={false}
-            muted
-            loop
-            playsInline
-            className="absolute-center absolute  size-64 object-cover -mt-[1px] object-center"
-            onLoadedData={handleVideoLoad}
-            style={{
-              zIndex: activeVideoElement === 2 ? 10 : 5
-            }}
-          />
-        </div>
-        <h1 className="special-font hero-heading absolute bottom-5 right-5 z-40 text-blue-75 ">
-          Gaming
-        </h1>
-        <div className="absolute left-0  top-0  z-40 size-full ">
-          <div className="mt-24 px-5 sm:px-10">
-            <h1 className="special-font text-blue-100 hero-heading">
-              redefine
-            </h1>
-            <p className="mb-5 max-w-64 font-robert-regular text-blue-100 ">
-              Enter the Metagame Layer <br />
-              Unleash the Play Economy
-            </p>
-            <Button
-              id="next-trailer"
-              title="Next Trailer"
-              leftIcon={<TiLocationArrow />}
-              containerClass="bg-yellow-300 flex-center gap-1"
-              onClick={handleMiniVdClick}
-            />
-            {/* Indicador do vídeo atual (para debug) */}
-
-            {import.meta.env.MODE === 'development' && (
-              <div className="mt-4 bg-black bg-opacity-50 p-2 text-white rounded inline-block">
-                <p>Video Atual: {currentVideoIndex}</p>
-                <p>
-                  Próximo Video:{' '}
-                  {currentVideoIndex === 4 ? 1 : currentVideoIndex + 1}
-                </p>{' '}
-                <p>Player Ativo: {activeVideoElement}</p>
+                >
+                  <video
+                    src={getVideoSrc(
+                      currentVideoIndex === 4 ? 1 : currentVideoIndex + 1
+                    )}
+                    muted
+                    loop
+                    playsInline
+                    id="current-video"
+                    className=" z-50 size-64 origin-center scale-150 object-cover object-center"
+                    onLoadedData={handleVideoLoad}
+                  />
+                </div>
+                {/* </VideoPreview> */}
               </div>
             )}
+            <video
+              ref={videoRef1}
+              src={getVideoSrc(1)}
+              loop
+              muted
+              autoPlay
+              playsInline
+              className="absolute-center absolute z-20 size-full -mt-[1px] object-cover object-center"
+              onLoadedData={handleVideoLoad}
+              style={{
+                zIndex: activeVideoElement === 1 ? 10 : 5
+              }}
+            />
+            <video
+              ref={videoRef2}
+              src={getVideoSrc(2)}
+              autoPlay={false}
+              muted
+              loop
+              playsInline
+              className="absolute-center absolute  size-64 object-cover -mt-[1px] object-center"
+              onLoadedData={handleVideoLoad}
+              style={{
+                zIndex: activeVideoElement === 2 ? 10 : 5
+              }}
+            />
+          </div>
+          <h1 className="special-font hero-heading absolute bottom-5 right-5 z-40 text-blue-75 ">
+            Gaming
+          </h1>
+          <div className="absolute left-0  top-0  z-40 size-full ">
+            <div className="mt-24 px-5 sm:px-10">
+              <h1 className="special-font text-blue-100 hero-heading">
+                redefine
+              </h1>
+              <p className="mb-5 max-w-64 font-robert-regular text-blue-100 ">
+                Enter the Metagame Layer <br />
+                Unleash the Play Economy
+              </p>
+              <Button
+                id="next-trailer"
+                title="Next Trailer"
+                leftIcon={<TiLocationArrow />}
+                containerClass="bg-yellow-300 flex-center gap-1"
+                onClick={handleMiniVdClick}
+              />
+              {/* Indicador do vídeo atual (para debug) */}
+
+              {import.meta.env.MODE === 'development' && (
+                <div className="mt-4 bg-black bg-opacity-50 p-2 text-white rounded inline-block">
+                  <p>Video Atual: {currentVideoIndex}</p>
+                  <p>
+                    Próximo Video:{' '}
+                    {currentVideoIndex === 4 ? 1 : currentVideoIndex + 1}
+                  </p>{' '}
+                  <p>Player Ativo: {activeVideoElement}</p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
-      </div>
-      <h1 className="special-font hero-heading absolute bottom-5 right-5  text-black ">
-        Gaming
-      </h1>
+        <h1 className="special-font hero-heading absolute bottom-5 right-5  text-black ">
+          Gaming
+        </h1>
+      </HeroMouseMoviment>
     </div>
   )
 }
