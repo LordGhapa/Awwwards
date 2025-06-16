@@ -24,7 +24,7 @@ export default function HeroMouseMoviment({
     if (!heroDiv.current) return
     const width = heroDiv.current.offsetWidth
     const height = heroDiv.current.offsetHeight
-    const threshold = 10 / 100
+    const threshold = 5 / 100
 
     const thresholdX = width * threshold
     const thresholdY = height * threshold
@@ -38,6 +38,7 @@ export default function HeroMouseMoviment({
     if (dx > thresholdX || dy > thresholdY) {
       setShowMiniVd(true)
     } else {
+      // setShowMiniVd(true)
       setShowMiniVd(false)
     }
     lastPositionRef.current = currentPositionRef.current

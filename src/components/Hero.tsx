@@ -3,11 +3,11 @@ import Button from './Button'
 import { TiLocationArrow } from 'react-icons/ti'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
-
+import { motion } from 'framer-motion'
 gsap.registerPlugin(ScrollTrigger)
 
 import { ScrollTrigger } from 'gsap/all'
-import clsx from 'clsx'
+
 import HeroMouseMoviment from './HeroMouseMoviment'
 
 type HeroProps = {
@@ -37,12 +37,12 @@ export default function Hero({ playMusic }: HeroProps) {
   const getVideoSrc = (index: number) => `videos/hero-${index}.mp4`
 
   const handleMiniVdClick = () => {
-    // evita que mini video seja visivel durante a transição
-    setShowMiniVd(false)
     if (playMusic?.current) {
       playMusic.current()
     }
     if (isTransitioning) return
+    // evita que mini video seja visivel durante a transição
+    setShowMiniVd(false)
     setIsTransitioning(true)
     // Determinar qual vídeo será o próximo na sequência
     const nextVideoIndex = currentVideoIndex === 4 ? 1 : currentVideoIndex + 1
@@ -204,21 +204,23 @@ export default function Hero({ playMusic }: HeroProps) {
         >
           <div>
             {!isTransitioning && (
-              <div className="mask-clip-path absolute-center absolute z-50 size-64 cursor-pointer overflow-hidden rounded-lg  ">
-                {/* <VideoPreview> */}
+              <div className="mask-clip-path absolute-center absolute z-50 size-64 cursor-pointer overflow-hidden rounded-lg">
                 <div
                   style={{
                     transform: transformStyleMiniVd
                   }}
                 >
-                  <div
+                  <motion.div
+                    initial={{ scale: 0.5, opacity: 0 }}
+                    animate={{
+                      scale: showMiniVd ? 1 : 0.5,
+                      opacity: showMiniVd ? 1 : 0
+                    }}
+                    exit={{ scale: 0, opacity: 0 }}
+                    whileHover={{ scale: 1, opacity: 1 }}
+                    transition={{ duration: 0.5 }}
                     onClick={handleMiniVdClick}
-                    className={clsx(
-                      'origin-center scale-50 opacity-0 transition-all duration-500 ease-in hover:scale-100 hover:opacity-100',
-                      {
-                        'opacity-100 scale-100 ': showMiniVd
-                      }
-                    )}
+                    className="origin-center "
                   >
                     <video
                       src={getVideoSrc(
@@ -228,12 +230,11 @@ export default function Hero({ playMusic }: HeroProps) {
                       loop
                       playsInline
                       id="current-video"
-                      className=" z-50 size-64 origin-center scale-150 object-cover object-center"
+                      className="z-50 size-64 origin-center scale-150 object-cover object-center"
                       onLoadedData={handleVideoLoad}
                     />
-                  </div>
+                  </motion.div>
                 </div>
-                {/* </VideoPreview> */}
               </div>
             )}
             <video
