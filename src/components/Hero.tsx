@@ -13,6 +13,12 @@ import HeroMouseMoviment from './HeroMouseMoviment'
 type HeroProps = {
   playMusic?: React.RefObject<(() => void) | null>
 }
+const videoSources = [
+  'videos/hero-1.mp4',
+  'videos/hero-2.mp4',
+  'videos/hero-3.mp4',
+  'videos/hero-4.mp4'
+]
 
 export default function Hero({ playMusic }: HeroProps) {
   // Estado para rastrear qual vídeo estamos exibindo (1-4)
@@ -23,8 +29,6 @@ export default function Hero({ playMusic }: HeroProps) {
   const [isTransitioning, setIsTransitioning] = useState(false)
 
   const [isLoading, setIsLoading] = useState(true)
-  const [loadedVideos, setLoadedVideos] = useState(0)
-  const essentialVideosToLoad = 2
 
   const loadingRef = useRef<HTMLDivElement>(null)
 
@@ -133,20 +137,34 @@ export default function Hero({ playMusic }: HeroProps) {
     })
   }
 
-  const handleEssentialVideoLoad = () => {
-    // Usamos uma função de callback para garantir que o estado seja atualizado corretamente
-    setLoadedVideos(prevCount => prevCount + 1)
-  }
-
   useEffect(() => {
-    if (loadedVideos === essentialVideosToLoad) {
-      setIsLoading(false)
+    let videosLoaded = 0
+    const totalVideosToLoad = videoSources.length
 
-      if (videoRef1.current) {
-        videoRef1.current.play()
+    videoSources.forEach(src => {
+     
+      const video = document.createElement('video')
+      
+      video.src = src
+      // O evento 'canplaythrough' é o mais confiável para saber que o vídeo pode ser reproduzido
+      video.oncanplaythrough = () => {
+        videosLoaded++
+        
+        if (videosLoaded === totalVideosToLoad) {
+         
+          setIsLoading(false)
+        }
       }
-    }
-  }, [loadedVideos, essentialVideosToLoad])
+      video.onerror = () => {
+        console.error(`Falha ao carregar o vídeo: ${src}`)      
+        videosLoaded++
+        if (videosLoaded === totalVideosToLoad) {
+          setIsLoading(false)
+        }
+      }
+    })
+  }, [])
+
 
   useGSAP(() => {
     gsap.set('#video-frame', {
@@ -250,7 +268,6 @@ export default function Hero({ playMusic }: HeroProps) {
               autoPlay
               playsInline
               className="absolute-center absolute z-20 size-full -mt-[1px] object-cover object-center"
-              onCanPlayThrough={handleEssentialVideoLoad}
               style={{
                 zIndex: activeVideoElement === 1 ? 10 : 5
               }}
@@ -263,7 +280,6 @@ export default function Hero({ playMusic }: HeroProps) {
               loop
               playsInline
               className="absolute-center absolute  size-64 object-cover -mt-[1px] object-center"
-              onCanPlayThrough={handleEssentialVideoLoad}
               style={{
                 zIndex: activeVideoElement === 2 ? 10 : 5
               }}
