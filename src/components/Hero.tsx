@@ -9,6 +9,7 @@ gsap.registerPlugin(ScrollTrigger)
 import { ScrollTrigger } from 'gsap/all'
 
 import HeroMouseMoviment from './HeroMouseMoviment'
+import DecryptedText from './DecryptedText'
 
 type HeroProps = {
   playMusic?: React.RefObject<(() => void) | null>
@@ -19,6 +20,7 @@ const videoSources = [
   'videos/hero-3.mp4',
   'videos/hero-4.mp4'
 ]
+const words = ['Gaming', 'Economy', 'Metagame', 'Radiant']
 
 export default function Hero({ playMusic }: HeroProps) {
   // Estado para rastrear qual vídeo estamos exibindo (1-4)
@@ -142,21 +144,19 @@ export default function Hero({ playMusic }: HeroProps) {
     const totalVideosToLoad = videoSources.length
 
     videoSources.forEach(src => {
-     
       const video = document.createElement('video')
-      
+
       video.src = src
       // O evento 'canplaythrough' é o mais confiável para saber que o vídeo pode ser reproduzido
       video.oncanplaythrough = () => {
         videosLoaded++
-        
+
         if (videosLoaded === totalVideosToLoad) {
-         
           setIsLoading(false)
         }
       }
       video.onerror = () => {
-        console.error(`Falha ao carregar o vídeo: ${src}`)      
+        console.error(`Falha ao carregar o vídeo: ${src}`)
         videosLoaded++
         if (videosLoaded === totalVideosToLoad) {
           setIsLoading(false)
@@ -164,7 +164,6 @@ export default function Hero({ playMusic }: HeroProps) {
       }
     })
   }, [])
-
 
   useGSAP(() => {
     gsap.set('#video-frame', {
@@ -286,7 +285,15 @@ export default function Hero({ playMusic }: HeroProps) {
             />
           </div>
           <h1 className="special-font hero-heading absolute bottom-5 right-5 z-40 text-blue-75 ">
-            Gaming
+            <DecryptedText
+              key={currentVideoIndex}
+              text={words[currentVideoIndex - 1]}
+              speed={50}
+              maxIterations={50}
+              sequential
+              animateOn="view"
+              revealDirection="start"
+            />
           </h1>
           <div className="absolute left-0  top-0  z-40 size-full ">
             <div className="mt-24 px-5 sm:px-10">
@@ -320,7 +327,15 @@ export default function Hero({ playMusic }: HeroProps) {
           </div>
         </div>
         <h1 className="special-font hero-heading absolute bottom-5 right-5  text-black ">
-          Gaming
+          <DecryptedText
+            key={currentVideoIndex}
+            text={words[currentVideoIndex - 1]}
+            speed={50}
+            maxIterations={50}
+            sequential
+            animateOn="view"
+            revealDirection="start"
+          />
         </h1>
       </HeroMouseMoviment>
     </div>
