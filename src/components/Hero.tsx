@@ -28,7 +28,8 @@ export default function Hero({ playMusic }: HeroProps) {
 
   const loadingRef = useRef<HTMLDivElement>(null)
 
-  const [setshowMiniVd, setSetshowMiniVd] = useState(false)
+  const [showMiniVd, setShowMiniVd] = useState(false)
+  const [transformStyleMiniVd, setTransformStyleMiniVd] = useState('')
 
   // Referências para os dois elementos de vídeo físicos
   const videoRef1 = useRef<HTMLVideoElement>(null)
@@ -36,6 +37,8 @@ export default function Hero({ playMusic }: HeroProps) {
   const getVideoSrc = (index: number) => `videos/hero-${index}.mp4`
 
   const handleMiniVdClick = () => {
+    // evita que mini video seja visivel durante a transição
+    setShowMiniVd(false)
     if (playMusic?.current) {
       playMusic.current()
     }
@@ -175,9 +178,13 @@ export default function Hero({ playMusic }: HeroProps) {
       }
     })
   }, [isLoading])
+
   return (
     <div className="relative h-dvh w-screen  overflow-x-hidden text-blue-200">
-      <HeroMouseMoviment setSetshowMiniVd={setSetshowMiniVd}>
+      <HeroMouseMoviment
+        setShowMiniVd={setShowMiniVd}
+        setTransformStyleMiniVd={setTransformStyleMiniVd}
+      >
         <div className="h-dvh w-screen flex-center absolute">
           <div
             ref={loadingRef}
@@ -200,25 +207,31 @@ export default function Hero({ playMusic }: HeroProps) {
               <div className="mask-clip-path absolute-center absolute z-50 size-64 cursor-pointer overflow-hidden rounded-lg  ">
                 {/* <VideoPreview> */}
                 <div
-                  onClick={handleMiniVdClick}
-                  className={clsx(
-                    'origin-center scale-50 opacity-0 transition-all duration-500 ease-in hover:scale-100 hover:opacity-100',
-                    {
-                      'opacity-100 scale-100': setshowMiniVd
-                    }
-                  )}
+                  style={{
+                    transform: transformStyleMiniVd
+                  }}
                 >
-                  <video
-                    src={getVideoSrc(
-                      currentVideoIndex === 4 ? 1 : currentVideoIndex + 1
+                  <div
+                    onClick={handleMiniVdClick}
+                    className={clsx(
+                      'origin-center scale-50 opacity-0 transition-all duration-500 ease-in hover:scale-100 hover:opacity-100',
+                      {
+                        'opacity-100 scale-100 ': showMiniVd
+                      }
                     )}
-                    muted
-                    loop
-                    playsInline
-                    id="current-video"
-                    className=" z-50 size-64 origin-center scale-150 object-cover object-center"
-                    onLoadedData={handleVideoLoad}
-                  />
+                  >
+                    <video
+                      src={getVideoSrc(
+                        currentVideoIndex === 4 ? 1 : currentVideoIndex + 1
+                      )}
+                      muted
+                      loop
+                      playsInline
+                      id="current-video"
+                      className=" z-50 size-64 origin-center scale-150 object-cover object-center"
+                      onLoadedData={handleVideoLoad}
+                    />
+                  </div>
                 </div>
                 {/* </VideoPreview> */}
               </div>
