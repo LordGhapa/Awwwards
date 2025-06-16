@@ -68,7 +68,7 @@ export default function HeroMouseMoviment({
     const tiltY = (relativeX - 0.5) * tilt
 
     const newTransform = `perspective(300px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale3d(.98, .98, .98)`
-    console.log('newTransform', newTransform)
+
     setTransformStyleMiniVd(newTransform)
   }
 
