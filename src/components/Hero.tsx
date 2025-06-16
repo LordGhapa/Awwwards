@@ -68,9 +68,7 @@ export default function Hero({ playMusic }: HeroProps) {
       nextVideoRef.current.src = getVideoSrc(nextVideoIndex)
       // Carregar o vídeo
       nextVideoRef.current.load()
-      // Pre-load de imagens de miniatura
-      // const preloadImg = new Image()
-      // preloadImg.src = `thumbnails/hero-${nextVideoIndex}.jpg`
+      
     }
     //setando css inicial para visivel
     gsap.set(nextVideoRef.current, {
