@@ -24,7 +24,7 @@ export default function Hero({ playMusic }: HeroProps) {
 
   const [isLoading, setIsLoading] = useState(true)
   const [loadedVideos, setLoadedVideos] = useState(0)
-  const totalVideos = 4
+  const essentialVideosToLoad = 2
 
   const loadingRef = useRef<HTMLDivElement>(null)
 
@@ -133,15 +133,20 @@ export default function Hero({ playMusic }: HeroProps) {
     })
   }
 
-  useEffect(() => {
-    if (loadedVideos === totalVideos - 1) {
-      setIsLoading(false)
-    }
-  }, [loadedVideos])
-
-  const handleVideoLoad = () => {
+  const handleEssentialVideoLoad = () => {
+    // Usamos uma função de callback para garantir que o estado seja atualizado corretamente
     setLoadedVideos(prevCount => prevCount + 1)
   }
+
+  useEffect(() => {
+    if (loadedVideos === essentialVideosToLoad) {
+      setIsLoading(false)
+
+      if (videoRef1.current) {
+        videoRef1.current.play()
+      }
+    }
+  }, [loadedVideos, essentialVideosToLoad])
 
   useGSAP(() => {
     gsap.set('#video-frame', {
@@ -161,19 +166,20 @@ export default function Hero({ playMusic }: HeroProps) {
     })
   })
   useGSAP(() => {
+    if (isLoading) return
     gsap.set(loadingRef.current, {
       borderRadius: '50%',
       width: loadingRef.current ? loadingRef.current.offsetHeight : '100%',
       delay: 1
     })
-
     gsap.to(loadingRef.current, {
       scale: 0,
       duration: 0.5,
       delay: 1,
       onComplete: () => {
         gsap.set(loadingRef.current, {
-          zIndex: -1
+          zIndex: -1,
+          display: 'none'
         })
       }
     })
@@ -181,23 +187,23 @@ export default function Hero({ playMusic }: HeroProps) {
 
   return (
     <div className="relative h-dvh w-screen  overflow-x-hidden text-blue-200">
+      <div className="h-dvh w-screen flex-center absolute">
+        <div
+          ref={loadingRef}
+          className="flex-center absolute z-[100] h-dvh w-screen overflow-hidden bg-violet-50"
+        >
+          <div className="three-body">
+            <div className="three-body__dot"></div>
+            <div className="three-body__dot"></div>
+            <div className="three-body__dot"></div>
+          </div>
+        </div>
+      </div>
+
       <HeroMouseMoviment
         setShowMiniVd={setShowMiniVd}
         setTransformStyleMiniVd={setTransformStyleMiniVd}
       >
-        <div className="h-dvh w-screen flex-center absolute">
-          <div
-            ref={loadingRef}
-            className="flex-center absolute z-[100] h-dvh w-screen overflow-hidden bg-violet-50"
-          >
-            <div className="three-body">
-              <div className="three-body__dot"></div>
-              <div className="three-body__dot"></div>
-              <div className="three-body__dot"></div>
-            </div>
-          </div>
-        </div>
-
         <div
           id="video-frame"
           className="relative z-10 h-dvh w-screen overflow-hidden rounded-lg  "
@@ -231,7 +237,6 @@ export default function Hero({ playMusic }: HeroProps) {
                       playsInline
                       id="current-video"
                       className="z-50 size-64 origin-center scale-150 object-cover object-center"
-                      onLoadedData={handleVideoLoad}
                     />
                   </motion.div>
                 </div>
@@ -245,7 +250,7 @@ export default function Hero({ playMusic }: HeroProps) {
               autoPlay
               playsInline
               className="absolute-center absolute z-20 size-full -mt-[1px] object-cover object-center"
-              onLoadedData={handleVideoLoad}
+              onCanPlayThrough={handleEssentialVideoLoad}
               style={{
                 zIndex: activeVideoElement === 1 ? 10 : 5
               }}
@@ -258,7 +263,7 @@ export default function Hero({ playMusic }: HeroProps) {
               loop
               playsInline
               className="absolute-center absolute  size-64 object-cover -mt-[1px] object-center"
-              onLoadedData={handleVideoLoad}
+              onCanPlayThrough={handleEssentialVideoLoad}
               style={{
                 zIndex: activeVideoElement === 2 ? 10 : 5
               }}
