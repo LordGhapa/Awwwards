@@ -40,7 +40,7 @@ export default function Hero({ playMusic }: HeroProps) {
   // Referências para os dois elementos de vídeo físicos
   const videoRef1 = useRef<HTMLVideoElement>(null)
   const videoRef2 = useRef<HTMLVideoElement>(null)
-  const getVideoSrc = (index: number) => `videos/hero-${index}.mp4`
+  const getVideoSrc = (index: number) => `/videos/hero-${index}.mp4`
 
   const handleMiniVdClick = () => {
     if (playMusic?.current) {
@@ -249,6 +249,7 @@ export default function Hero({ playMusic }: HeroProps) {
                       )}
                       muted
                       loop
+                      preload="auto"
                       playsInline
                       id="current-video"
                       className="z-50 size-64 origin-center scale-150 object-cover object-center"
@@ -261,6 +262,7 @@ export default function Hero({ playMusic }: HeroProps) {
               ref={videoRef1}
               src={getVideoSrc(1)}
               loop
+              preload="auto"
               muted
               autoPlay
               playsInline
@@ -275,6 +277,7 @@ export default function Hero({ playMusic }: HeroProps) {
               autoPlay={false}
               muted
               loop
+              preload="auto"
               playsInline
               className="absolute-center absolute  size-64 object-cover -mt-[1px] object-center"
               style={{
