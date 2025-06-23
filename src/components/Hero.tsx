@@ -14,12 +14,39 @@ import DecryptedText from './DecryptedText'
 type HeroProps = {
   playMusic?: React.RefObject<(() => void) | null>
 }
+// const videoSources = [
+//   'videos/hero-1.mp4',
+//   'videos/hero-2.mp4',
+//   'videos/hero-3.mp4',
+//   'videos/hero-4.mp4'
+// ]
+
 const videoSources = [
-  'videos/hero-1.mp4',
-  'videos/hero-2.mp4',
-  'videos/hero-3.mp4',
-  'videos/hero-4.mp4'
+  {
+    id: 1,
+    src: '/videos/hero-1.mp4',
+
+    poster: '/posters/hero-1.jpg'
+  },
+  {
+    id: 2,
+    src: '/videos/hero-2.mp4',
+
+    poster: '/posters/hero-2.jpg'
+  },
+  {
+    id: 3,
+    src: '/videos/hero-3.mp4',
+
+    poster: '/posters/hero-3.jpg'
+  },
+  {
+    id: 4,
+    src: '/videos/hero-4.mp4',
+    poster: '/posters/hero-4.jpg'
+  }
 ]
+
 const words = ['Gaming', 'Economy', 'Metagame', 'Radiant']
 
 export default function Hero({ playMusic }: HeroProps) {
@@ -41,6 +68,7 @@ export default function Hero({ playMusic }: HeroProps) {
   const videoRef1 = useRef<HTMLVideoElement>(null)
   const videoRef2 = useRef<HTMLVideoElement>(null)
   const getVideoSrc = (index: number) => `/videos/hero-${index}.mp4`
+  const getVideoPoster = (index: number) => `/posters/hero-${index}.mp4`
 
   const handleMiniVdClick = () => {
     if (playMusic?.current) {
@@ -66,6 +94,7 @@ export default function Hero({ playMusic }: HeroProps) {
         getVideoSrc(nextVideoIndex)
     ) {
       nextVideoRef.current.src = getVideoSrc(nextVideoIndex)
+      nextVideoRef.current.poster = getVideoPoster(nextVideoIndex)
       // Carregar o vídeo
       nextVideoRef.current.load()
     }
@@ -137,29 +166,31 @@ export default function Hero({ playMusic }: HeroProps) {
   }
 
   useEffect(() => {
-    let videosLoaded = 0
-    const totalVideosToLoad = videoSources.length
+    const videosLoaded = 0
+    const totalVideosToLoad = 2 // videoSources.length
 
-    videoSources.forEach(src => {
-      const video = document.createElement('video')
+    // videoSources.forEach(videoInfor => {
+    //   const { src } = videoInfor
+    //   const video = document.createElement('video')
 
-      video.src = src
-      // O evento 'canplaythrough' é o mais confiável para saber que o vídeo pode ser reproduzido
-      video.oncanplaythrough = () => {
-        videosLoaded++
+    //   video.src = src
+    //   // O evento 'canplaythrough' é o mais confiável para saber que o vídeo pode ser reproduzido
+    //   video.oncanplaythrough = () => {
+    //     videosLoaded++
 
-        if (videosLoaded === totalVideosToLoad) {
-          setIsLoading(false)
-        }
-      }
-      video.onerror = () => {
-        console.error(`Falha ao carregar o vídeo: ${src}`)
-        videosLoaded++
-        if (videosLoaded === totalVideosToLoad) {
-          setIsLoading(false)
-        }
-      }
-    })
+    //     if (videosLoaded === totalVideosToLoad) {
+    //       setIsLoading(false)
+    //     }
+    //   }
+    //   video.onerror = () => {
+    //     console.error(`Falha ao carregar o vídeo: ${src}`)
+    //     videosLoaded++
+    //     if (videosLoaded === totalVideosToLoad) {
+    //       setIsLoading(false)
+    //     }
+    //   }
+    // })
+    setIsLoading(false)
   }, [])
 
   useGSAP(() => {
@@ -260,6 +291,7 @@ export default function Hero({ playMusic }: HeroProps) {
             <video
               ref={videoRef1}
               src={getVideoSrc(1)}
+              poster={getVideoPoster(1)}
               loop
               preload="auto"
               muted
@@ -273,6 +305,7 @@ export default function Hero({ playMusic }: HeroProps) {
             <video
               ref={videoRef2}
               src={getVideoSrc(2)}
+              poster={getVideoPoster(2)}
               autoPlay={false}
               muted
               loop
