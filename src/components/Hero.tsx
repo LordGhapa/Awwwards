@@ -68,7 +68,6 @@ export default function Hero({ playMusic }: HeroProps) {
       nextVideoRef.current.src = getVideoSrc(nextVideoIndex)
       // Carregar o vídeo
       nextVideoRef.current.load()
-      
     }
     //setando css inicial para visivel
     gsap.set(nextVideoRef.current, {
