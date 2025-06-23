@@ -14,50 +14,24 @@ import DecryptedText from './DecryptedText'
 type HeroProps = {
   playMusic?: React.RefObject<(() => void) | null>
 }
-// const videoSources = [
-//   'videos/hero-1.mp4',
-//   'videos/hero-2.mp4',
-//   'videos/hero-3.mp4',
-//   'videos/hero-4.mp4'
-// ]
-
-const videoSources = [
-  {
-    id: 1,
-    src: '/videos/hero-1.mp4',
-
-    poster: '/posters/hero-1.jpg'
-  },
-  {
-    id: 2,
-    src: '/videos/hero-2.mp4',
-
-    poster: '/posters/hero-2.jpg'
-  },
-  {
-    id: 3,
-    src: '/videos/hero-3.mp4',
-
-    poster: '/posters/hero-3.jpg'
-  },
-  {
-    id: 4,
-    src: '/videos/hero-4.mp4',
-    poster: '/posters/hero-4.jpg'
-  }
+const videos = [
+  { id: 1, mp4: '/videos/hero-1.mp4', poster: '/posters/hero-1.jpg' },
+  { id: 2, mp4: '/videos/hero-2.mp4', poster: '/posters/hero-2.jpg' },
+  { id: 3, mp4: '/videos/hero-3.mp4', poster: '/posters/hero-3.jpg' },
+  { id: 4, mp4: '/videos/hero-4.mp4', poster: '/posters/hero-4.jpg' }
 ]
 
 const words = ['Gaming', 'Economy', 'Metagame', 'Radiant']
 
 export default function Hero({ playMusic }: HeroProps) {
-  // Estado para rastrear qual vídeo estamos exibindo (1-4)
-  const [currentVideoIndex, setCurrentVideoIndex] = useState(1)
+  // Estado para rastrear qual vídeo estamos exibindo (0-3)
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0)
   // Estado para controlar qual vídeo físico (1 ou 2) está ativo
   const [activeVideoElement, setActiveVideoElement] = useState(1)
   // Estado para evitar cliques durante transições
   const [isTransitioning, setIsTransitioning] = useState(false)
 
-  const [isLoading, setIsLoading] = useState(true)
+  const [isReady, setIsReady] = useState(false)
 
   const loadingRef = useRef<HTMLDivElement>(null)
 
@@ -67,8 +41,25 @@ export default function Hero({ playMusic }: HeroProps) {
   // Referências para os dois elementos de vídeo físicos
   const videoRef1 = useRef<HTMLVideoElement>(null)
   const videoRef2 = useRef<HTMLVideoElement>(null)
-  const getVideoSrc = (index: number) => `/videos/hero-${index}.mp4`
-  const getVideoPoster = (index: number) => `/posters/hero-${index}.mp4`
+
+  useEffect(() => {
+    // Esconde a tela de loading para exibir a página o mais rápido possível.
+    const timer = setTimeout(() => setIsReady(true), 200) // Pequeno delay para a UI estabilizar.
+    return () => clearTimeout(timer)
+  }, [])
+  useEffect(() => {
+    // Começa a carregar os vídeos 3 e 4 em segundo plano após a página já estar visível.
+    // utilização do link em vez de video pois link apenas baixa o video nao cria os buffers necessarios para inicia ele loading inicial menor
+    videos.forEach(video => {
+      if (video.id > 2) {
+        const link = document.createElement('link')
+        link.rel = 'preload'
+        link.as = 'video'
+        link.href = video.mp4
+        document.head.appendChild(link)
+      }
+    })
+  }, [])
 
   const handleMiniVdClick = () => {
     if (playMusic?.current) {
@@ -79,7 +70,8 @@ export default function Hero({ playMusic }: HeroProps) {
     setShowMiniVd(false)
     setIsTransitioning(true)
     // Determinar qual vídeo será o próximo na sequência
-    const nextVideoIndex = currentVideoIndex === 4 ? 1 : currentVideoIndex + 1
+    const nextVideoIdx = (currentVideoIndex + 1) % videos.length
+    const nextVideoData = videos[nextVideoIdx]
     // Determinar qual elemento de vídeo está inativo para torná-lo ativo
     const nextVideoElement = activeVideoElement === 1 ? 2 : 1
 
@@ -88,13 +80,9 @@ export default function Hero({ playMusic }: HeroProps) {
     const nextVideoRef = activeVideoElement === 1 ? videoRef2 : videoRef1
 
     // Garantir que o próximo vídeo tenha a URL correta antes da animação
-    if (
-      nextVideoRef.current &&
-      nextVideoRef.current.src.replace(`${window.location.origin}/`, '') !==
-        getVideoSrc(nextVideoIndex)
-    ) {
-      nextVideoRef.current.src = getVideoSrc(nextVideoIndex)
-      nextVideoRef.current.poster = getVideoPoster(nextVideoIndex)
+    if (nextVideoRef.current) {
+      nextVideoRef.current.src = nextVideoData.mp4
+      nextVideoRef.current.poster = nextVideoData.poster
       // Carregar o vídeo
       nextVideoRef.current.load()
     }
@@ -142,56 +130,25 @@ export default function Hero({ playMusic }: HeroProps) {
           },
           onComplete: () => {
             // Calcular o próximo vídeo a ser carregado (dois à frente)
-            const nextPreloadIndex =
-              nextVideoIndex === 4
-                ? 1
-                : nextVideoIndex === 3
-                ? 4
-                : nextVideoIndex + 1
+            const videoToPreloadIdx = (nextVideoIdx + 1) % videos.length
+            const videoToPreloadData = videos[videoToPreloadIdx]
 
             // Atualizar o src do vídeo atual que diminuiu para o próximo da sequência e garante que ele não seja exibido
             if (currentVideoRef.current) {
-              currentVideoRef.current.src = getVideoSrc(nextPreloadIndex)
+              currentVideoRef.current.src = videoToPreloadData.mp4
+              currentVideoRef.current.poster = videoToPreloadData.poster
               currentVideoRef.current.load()
               gsap.set(currentVideoRef.current, { visibility: 'hidden' })
             }
             // indica fim da animação e atualiza os estados
             setIsTransitioning(false)
-            setCurrentVideoIndex(nextVideoIndex)
+            setCurrentVideoIndex(nextVideoIdx)
             setActiveVideoElement(nextVideoElement)
           }
         })
       }
     })
   }
-
-  useEffect(() => {
-    const videosLoaded = 0
-    const totalVideosToLoad = 2 // videoSources.length
-
-    // videoSources.forEach(videoInfor => {
-    //   const { src } = videoInfor
-    //   const video = document.createElement('video')
-
-    //   video.src = src
-    //   // O evento 'canplaythrough' é o mais confiável para saber que o vídeo pode ser reproduzido
-    //   video.oncanplaythrough = () => {
-    //     videosLoaded++
-
-    //     if (videosLoaded === totalVideosToLoad) {
-    //       setIsLoading(false)
-    //     }
-    //   }
-    //   video.onerror = () => {
-    //     console.error(`Falha ao carregar o vídeo: ${src}`)
-    //     videosLoaded++
-    //     if (videosLoaded === totalVideosToLoad) {
-    //       setIsLoading(false)
-    //     }
-    //   }
-    // })
-    setIsLoading(false)
-  }, [])
 
   useGSAP(() => {
     gsap.set('#video-frame', {
@@ -211,7 +168,7 @@ export default function Hero({ playMusic }: HeroProps) {
     })
   })
   useGSAP(() => {
-    if (isLoading) return
+    if (!isReady) return
     gsap.set(loadingRef.current, {
       borderRadius: '50%',
       width: loadingRef.current ? loadingRef.current.offsetHeight : '100%',
@@ -228,8 +185,9 @@ export default function Hero({ playMusic }: HeroProps) {
         })
       }
     })
-  }, [isLoading])
-
+  }, [isReady])
+  // Obtém os dados do próximo vídeo para o mini player
+  const nextMiniVideo = videos[(currentVideoIndex + 1) % videos.length]
   return (
     <div className="relative h-dvh w-screen  overflow-x-hidden text-blue-200">
       <div className="h-dvh w-screen flex-center absolute">
@@ -244,7 +202,6 @@ export default function Hero({ playMusic }: HeroProps) {
           </div>
         </div>
       </div>
-
       <HeroMouseMoviment
         setShowMiniVd={setShowMiniVd}
         setTransformStyleMiniVd={setTransformStyleMiniVd}
@@ -274,9 +231,9 @@ export default function Hero({ playMusic }: HeroProps) {
                     className="origin-center "
                   >
                     <video
-                      src={getVideoSrc(
-                        currentVideoIndex === 4 ? 1 : currentVideoIndex + 1
-                      )}
+                      key={nextMiniVideo.id}
+                      src={nextMiniVideo.mp4}
+                      poster={nextMiniVideo.poster}
                       muted
                       loop
                       preload="auto"
@@ -290,8 +247,8 @@ export default function Hero({ playMusic }: HeroProps) {
             )}
             <video
               ref={videoRef1}
-              src={getVideoSrc(1)}
-              poster={getVideoPoster(1)}
+              src={videos[0].mp4}
+              poster={videos[0].poster}
               loop
               preload="auto"
               muted
@@ -304,8 +261,8 @@ export default function Hero({ playMusic }: HeroProps) {
             />
             <video
               ref={videoRef2}
-              src={getVideoSrc(2)}
-              poster={getVideoPoster(2)}
+              src={videos[1].mp4}
+              poster={videos[1].poster}
               autoPlay={false}
               muted
               loop
@@ -320,7 +277,7 @@ export default function Hero({ playMusic }: HeroProps) {
           <h1 className="special-font hero-heading absolute bottom-5 right-5 z-40 text-blue-75 ">
             <DecryptedText
               key={currentVideoIndex}
-              text={words[currentVideoIndex - 1]}
+              text={words[currentVideoIndex]}
               speed={50}
               maxIterations={50}
               sequential
@@ -362,7 +319,7 @@ export default function Hero({ playMusic }: HeroProps) {
         <h1 className="special-font hero-heading absolute bottom-5 right-5  text-black ">
           <DecryptedText
             key={currentVideoIndex}
-            text={words[currentVideoIndex - 1]}
+            text={words[currentVideoIndex]}
             speed={50}
             maxIterations={50}
             sequential
