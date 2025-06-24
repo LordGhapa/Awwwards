@@ -57,6 +57,9 @@ export default function Hero({ playMusic }: HeroProps) {
         link.as = 'video'
         link.href = video.mp4
         document.head.appendChild(link)
+        const videoEl = document.createElement('video')
+        videoEl.setAttribute('preload', 'auto')
+        videoEl.src = video.mp4
       }
     })
   }, [])
