@@ -44,7 +44,7 @@ export default function Hero({ playMusic }: HeroProps) {
 
   useEffect(() => {
     // Esconde a tela de loading para exibir a página o mais rápido possível.
-    const timer = setTimeout(() => setIsReady(true), 200) // Pequeno delay para a UI estabilizar.
+    const timer = setTimeout(() => setIsReady(true), 500) // Pequeno delay para a UI estabilizar.
     return () => clearTimeout(timer)
   }, [])
   useEffect(() => {
