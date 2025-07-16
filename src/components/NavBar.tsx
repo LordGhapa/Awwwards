@@ -106,6 +106,7 @@ export default function NavBar({ playMusicRef }: NavBarProps) {
             <button
               onClick={toggleAudioIndicator}
               className="ml-10 flex items-center space-x-0.5 cursor-pointer"
+              title='play/pause music'
             >
               <audio
                 ref={audioElementRef}
