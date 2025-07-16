@@ -1,10 +1,10 @@
 import { FaDiscord, FaTwitter, FaYoutube, FaMedium } from 'react-icons/fa'
 
 const socialLinks = [
-  { href: 'https://discord.com', icon: <FaDiscord /> },
-  { href: 'https://twitter.com', icon: <FaTwitter /> },
-  { href: 'https://youtube.com', icon: <FaYoutube /> },
-  { href: 'https://medium.com', icon: <FaMedium /> }
+  { href: 'https://discord.com', icon: <FaDiscord />, name: 'Discord' },
+  { href: 'https://twitter.com', icon: <FaTwitter />, name: 'Twitter' },
+  { href: 'https://youtube.com', icon: <FaYoutube />, name: 'YouTube' },
+  { href: 'https://medium.com', icon: <FaMedium />, name: 'Medium' }
 ]
 
 export default function Footer() {
@@ -23,8 +23,10 @@ export default function Footer() {
               target="_blank"
               rel="noopener noreferrer"
               className="text-black transition-colors duration-500 ease-in-out hover:text-white"
+              aria-label={`Visite nossa página no ${link.name}`}
             >
               {link.icon}
+              <span className="sr-only">{link.name}</span>
             </a>
           ))}
         </div>

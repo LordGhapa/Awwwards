@@ -262,7 +262,7 @@ export default function Hero({ playMusic }: HeroProps) {
       >
         <div
           id="video-frame"
-          className="relative z-10 h-dvh w-screen overflow-hidden rounded-lg  "
+          className="relative z-10 h-dvh w-screen overflow-hidden rounded-lg "
         >
           <div>
             {!videoState.isTransitioning && (

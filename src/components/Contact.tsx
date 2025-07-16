@@ -4,10 +4,11 @@ import Button from './Button'
 interface ImageClipBoxProps {
   src: string
   clipClass: string
+  alt: string
 }
-const ImageClipBox = ({ src, clipClass }: ImageClipBoxProps) => (
+const ImageClipBox = ({ src, clipClass, alt }: ImageClipBoxProps) => (
   <div className={clipClass}>
-    <img src={src} />
+    <img src={src} alt={alt} />
   </div>
 )
 
@@ -19,10 +20,12 @@ export default function Contact() {
           <ImageClipBox
             src="/img/contact-1.webp"
             clipClass="contact-clip-path-1"
+            alt="Imagem decorativa de contato 1"
           />
           <ImageClipBox
             src="/img/contact-2.webp"
             clipClass="contact-clip-path-2 lg:translate-y-40 translate-y-60"
+            alt="Imagem decorativa de contato 2"
           />
         </div>
 
@@ -30,10 +33,12 @@ export default function Contact() {
           <ImageClipBox
             src="/img/swordman-partial.webp"
             clipClass="absolute md:scale-125"
+            alt="Imagem parcial de guerreiro com espada"
           />
           <ImageClipBox
             src="/img/swordman.webp"
             clipClass="sword-man-clip-path md:scale-125"
+            alt="Guerreiro com espada completo"
           />
         </div>
 
