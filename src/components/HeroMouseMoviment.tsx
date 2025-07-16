@@ -1,14 +1,16 @@
 import { useEffect, useRef } from 'react'
 
+interface HeroMouseMovimentProps {
+  children: React.ReactNode
+  setShowMiniVd: React.Dispatch<React.SetStateAction<boolean>>
+  setTransformStyleMiniVd: React.Dispatch<React.SetStateAction<string>>
+}
+
 export default function HeroMouseMoviment({
   children,
   setShowMiniVd,
   setTransformStyleMiniVd
-}: {
-  children: React.ReactNode
-  setShowMiniVd: React.Dispatch<React.SetStateAction<boolean>>
-  setTransformStyleMiniVd: React.Dispatch<React.SetStateAction<string>>
-}) {
+}: HeroMouseMovimentProps) {
   const currentPositionRef = useRef({ x: 0, y: 0 })
   const lastPositionRef = useRef({ x: 0, y: 0 })
 
@@ -19,6 +21,9 @@ export default function HeroMouseMoviment({
     currentPositionRef.current = currentPosition
     handleMouseMoveStyle(e)
   }
+
+  const animationFrameRef = useRef<number | undefined>(undefined)
+  const lastCheckTimeRef = useRef<number>(0)
 
   const handleMouse = () => {
     if (!heroDiv.current) return
@@ -38,18 +43,26 @@ export default function HeroMouseMoviment({
     if (dx > thresholdX || dy > thresholdY) {
       setShowMiniVd(true)
     } else {
-      // setShowMiniVd(true)
       setShowMiniVd(false)
     }
     lastPositionRef.current = currentPositionRef.current
   }
 
-  useEffect(() => {
-    const intervalId = setInterval(() => {
+  const checkMouseMovement = (timestamp: number) => {
+    // Throttle para verificar apenas a cada 1000ms
+    if (timestamp - lastCheckTimeRef.current >= 1000) {
       handleMouse()
-    }, 1000)
+      lastCheckTimeRef.current = timestamp
+    }
+    animationFrameRef.current = requestAnimationFrame(checkMouseMovement)
+  }
+
+  useEffect(() => {
+    animationFrameRef.current = requestAnimationFrame(checkMouseMovement)
     return () => {
-      clearInterval(intervalId)
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current)
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
