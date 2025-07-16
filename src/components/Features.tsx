@@ -48,7 +48,7 @@ export default function Features() {
           <div className="bento-tilt-2 ">
             <div className="-font flex size-full flex-col justify-between bg-violet-300 p-5">
               <h1 className="bento-title special-font max-w-64  text-black ">
-                More Comming Soon!
+                More Coming Soon!
               </h1>
               <TiLocationArrow className="m-5 scale-[5] self-end" />
             </div>

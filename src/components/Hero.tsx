@@ -248,7 +248,11 @@ export default function Hero({ playMusic }: HeroProps) {
       </div>
       <HeroMouseMoviment
         setShowMiniVd={(show: React.SetStateAction<boolean>) =>
-          setUiState(prev => ({ ...prev, showMiniVd: typeof show === 'function' ? show(prev.showMiniVd) : show }))
+          setUiState(prev => ({
+            ...prev,
+            showMiniVd:
+              typeof show === 'function' ? show(prev.showMiniVd) : show
+          }))
         }
         setTransformStyleMiniVd={(transform: React.SetStateAction<string>) => {
           setUiState(prev => ({

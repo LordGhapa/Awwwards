@@ -4,6 +4,9 @@ body {
   @apply font-general overflow-x-hidden;
   width: 100dvw;
   background-color: #dfdff0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 @layer base {
@@ -76,7 +79,7 @@ body {
 }
 
 @utility hero-heading {
-  @apply uppercase font-zentry font-black text-5xl sm:right-10 sm:text-7xl md:text-9xl lg:text-[12rem];
+  @apply uppercase font-zentry text-5xl sm:right-10 sm:text-7xl md:text-9xl lg:text-[12rem];
 }
 
 @utility about-subtext {
@@ -92,9 +95,9 @@ body {
 }
 
 @utility animated-word {
-  @apply special-font font-zentry font-black opacity-0;
+  @apply special-font font-zentry  opacity-0;
+  font-weight: normal;
   transform: translate3d(10px, 51px, -60px) rotateY(60deg) rotateX(-40deg);
-  transform-origin: 50% 50% -150px !important;
   will-change: opacity, transform;
 }
 
@@ -107,7 +110,7 @@ body {
 }
 
 @utility bento-title {
-  @apply uppercase md:text-6xl text-4xl font-black font-zentry;
+  @apply uppercase md:text-6xl text-4xl  font-zentry;
 }
 
 @utility story-img-container {
