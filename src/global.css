@@ -129,7 +129,7 @@ body {
 }
 
 @utility gallery-img-container {
-  @apply size-64 overflow-hidden bg-violet-300;
+  @apply size-64 overflow-hidden bg-violet-300 ;
 }
 
 @utility gallery-img {
